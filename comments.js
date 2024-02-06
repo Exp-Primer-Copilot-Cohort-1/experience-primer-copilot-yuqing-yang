@@ -1,45 +1,42 @@
 // creat web server
-// 1. create a server
-// 2. create a request handler
-// 3. listen for requests
+// 1. load http module
+var http = require('http');
+var url = require('url');
+var fs = require('fs');
+var qs = require('querystring');
+var comments = [];
 
-// 1. create a server
-const http = require('http');
+// 2. create server
+http.createServer(function(request, response){
+    var url_parts = url.parse(request.url);
+    if(url_parts.pathname == '/comment'){
+        if(request.method == 'POST'){
+            var body = '';
+            request.on('data', function(chunk){
+                body += chunk;
+            });
+            request.on('end', function(){
+                var post = qs.parse(body);
+                comments.push(post.comment);
+                response.end('success');
+            });
+        }
+        else{
+            var all = '';
+            comments.forEach(function(comment){
+                all += comment + '<br>';
+            });
+            response.end(all);
+        }
+    }
+    else if(url_parts.pathname == '/'){
+        fs.readFile('./index.html', function(error, data){
+            response.end(data);
+        });
+    }
+    else{
+        response.end('404');
+    }
+}).listen(3000);
 
-const server = http.createServer((req, res) => {
-  // 2. create a request handler
-  if (req.url === '/comments') {
-    res.write('Here is a list of comments');
-    res.end();
-  } else if (req.url === '/contact') {
-    res.write('Here is the contact page');
-    res.end();
-  } else {
-    res.write('Here is the homepage');
-    res.end();
-  }
-});
-
-// 3. listen for requests
-server.listen(3000);
-console.log('Server listening on port 3000');
-*/
-
-// Path: comments.js
-// create web server
-const http = require('http');
-const server = http.createServer((req, res) => {
-  if (req.url === '/comments') {
-    res.write('Here is a list of comments');
-    res.end();
-  } else if (req.url === '/contact') {
-    res.write('Here is the contact page');
-    res.end();
-  } else {
-    res.write('Here is the homepage');
-    res.end();
-  }
-});
-
-server.listen(3000);
-console.log('Server listening on port 3000');
+console.log('Server running at http://
