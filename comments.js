@@ -5,6 +5,7 @@
 
 // 1. create a server
 const http = require('http');
+
 const server = http.createServer((req, res) => {
   // 2. create a request handler
   if (req.url === '/comments') {
